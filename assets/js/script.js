@@ -1,6 +1,4 @@
-'use strict';
-
-
+"use strict";
 
 // add Event on multiple elment
 
@@ -8,9 +6,7 @@ const addEventOnElements = function (elements, eventType, callback) {
   for (let i = 0; i < elements.length; i++) {
     elements[i].addEventListener(eventType, callback);
   }
-}
-
-
+};
 
 // PRELOADING
 
@@ -21,22 +17,20 @@ window.addEventListener("load", function () {
   document.body.classList.remove("active");
 });
 
-
-
 // MOBILE NAV TOGGLE
 
 const [navTogglers, navLinks, navbar, overlay] = [
   document.querySelectorAll("[data-nav-toggler]"),
   document.querySelectorAll("[data-nav-link]"),
   document.querySelector("[data-navbar]"),
-  document.querySelector("[data-overlay]")
+  document.querySelector("[data-overlay]"),
 ];
 
 const toggleNav = function () {
   navbar.classList.toggle("active");
   overlay.classList.toggle("active");
   document.body.classList.toggle("active");
-}
+};
 
 addEventOnElements(navTogglers, "click", toggleNav);
 
@@ -44,11 +38,9 @@ const closeNav = function () {
   navbar.classList.remove("active");
   overlay.classList.remove("active");
   document.body.classList.remove("active");
-}
+};
 
 addEventOnElements(navLinks, "click", closeNav);
-
-
 
 // HEADER
 
@@ -60,11 +52,9 @@ const activeElementOnScroll = function () {
   } else {
     header.classList.remove("active");
   }
-}
+};
 
 window.addEventListener("scroll", activeElementOnScroll);
-
-
 
 /**
  * TEXT ANIMATION EFFECT FOR HERO SECTION
@@ -77,7 +67,6 @@ let lastActiveLetterBoxIndex = 0;
 let totalLetterBoxDelay = 0;
 
 const setLetterEffect = function () {
-
   // loop through all letter boxes
   for (let i = 0; i < letterBoxes.length; i++) {
     // set initial animation delay
@@ -90,7 +79,6 @@ const setLetterEffect = function () {
 
     // loop through all letters
     for (let j = 0; j < letters.length; j++) {
-
       // create a span
       const span = document.createElement("span");
 
@@ -118,7 +106,6 @@ const setLetterEffect = function () {
       if (j >= letters.length - 1) break;
       // otherwise update
       letterAnimationDelay += 0.05;
-
     }
 
     // get total delay of active letter box
@@ -132,24 +119,25 @@ const setLetterEffect = function () {
     } else {
       letterBoxes[i].classList.remove("active");
     }
-
   }
 
-  setTimeout(function () {
-    lastActiveLetterBoxIndex = activeLetterBoxIndex;
+  setTimeout(
+    function () {
+      lastActiveLetterBoxIndex = activeLetterBoxIndex;
 
-    // update activeLetterBoxIndex based on total letter boxes
-    activeLetterBoxIndex >= letterBoxes.length - 1 ? activeLetterBoxIndex = 0 : activeLetterBoxIndex++;
+      // update activeLetterBoxIndex based on total letter boxes
+      activeLetterBoxIndex >= letterBoxes.length - 1
+        ? (activeLetterBoxIndex = 0)
+        : activeLetterBoxIndex++;
 
-    setLetterEffect();
-  }, (totalLetterBoxDelay * 1000) + 3000);
-
-}
+      setLetterEffect();
+    },
+    totalLetterBoxDelay * 1000 + 3000,
+  );
+};
 
 // call the letter effect function after window loaded
 window.addEventListener("load", setLetterEffect);
-
-
 
 /**
  * BACK TO TOP BUTTON
@@ -173,8 +161,6 @@ window.addEventListener("scroll", function () {
   }
 });
 
-
-
 /**
  * SCROLL REVEAL
  */
@@ -183,7 +169,8 @@ const revealElements = document.querySelectorAll("[data-reveal]");
 
 const scrollReveal = function () {
   for (let i = 0; i < revealElements.length; i++) {
-    const elementIsInScreen = revealElements[i].getBoundingClientRect().top < window.innerHeight / 1.15;
+    const elementIsInScreen =
+      revealElements[i].getBoundingClientRect().top < window.innerHeight / 1.15;
 
     if (elementIsInScreen) {
       revealElements[i].classList.add("revealed");
@@ -191,13 +178,11 @@ const scrollReveal = function () {
       revealElements[i].classList.remove("revealed");
     }
   }
-}
+};
 
 window.addEventListener("scroll", scrollReveal);
 
 scrollReveal();
-
-
 
 /**
  * CUSTOM CURSOR
@@ -216,10 +201,14 @@ document.body.addEventListener("mousemove", function (event) {
 });
 
 // add cursor hoverd class
-const hoverActive = function () { cursor.classList.add("hovered"); }
+const hoverActive = function () {
+  cursor.classList.add("hovered");
+};
 
 // remove cursor hovered class
-const hoverDeactive = function () { cursor.classList.remove("hovered"); }
+const hoverDeactive = function () {
+  cursor.classList.remove("hovered");
+};
 
 // add hover effect on cursor, when hover on any button or hyperlink
 addEventOnElements(anchorElements, "mouseover", hoverActive);
@@ -236,3 +225,45 @@ document.body.addEventListener("mouseout", function () {
 document.body.addEventListener("mouseover", function () {
   cursor.classList.remove("disabled");
 });
+
+// Seleciona o link do currículo
+document
+  .querySelector('a[href*="Resume_FS.pdf"]')
+  .addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const pdfUrl = this.href;
+    const fileName = "Resume_FS.pdf";
+
+    // Faz o download via fetch
+    fetch(pdfUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error("Arquivo não encontrado");
+        return response.blob();
+      })
+      .then((blob) => {
+        // Cria URL temporária para o blob
+        const url = window.URL.createObjectURL(blob);
+
+        // Cria link de download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+
+        // Dispara o download
+        document.body.appendChild(link);
+        link.click();
+
+        // Limpa
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        console.log("Download iniciado!");
+      })
+      .catch((error) => {
+        console.error("Erro ao baixar PDF:", error);
+        alert(
+          "Não foi possível baixar o currículo. Verifique o caminho do arquivo.",
+        );
+      });
+  });
